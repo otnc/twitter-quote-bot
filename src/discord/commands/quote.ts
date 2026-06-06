@@ -15,17 +15,10 @@ export const quoteCommand: Command = {
         .setName("url")
         .setDescription("引用したいツイートの URL")
         .setRequired(true)
-    )
-    .addBooleanOption((option) =>
-      option
-        .setName("color")
-        .setDescription("背景に色を付ける (既定: false)")
-        .setRequired(false)
     ),
 
   async execute(interaction) {
     const url = interaction.options.getString("url", true);
-    const color = interaction.options.getBoolean("color") ?? false;
 
     const parsed = parseTweetUrl(url);
     if (!parsed) {
@@ -39,7 +32,7 @@ export const quoteCommand: Command = {
 
     await interaction.deferReply();
     try {
-      const { attachment } = await createQuoteAttachment(parsed.id, color);
+      const { attachment } = await createQuoteAttachment(parsed.id);
       await interaction.editReply({ files: [attachment] });
     } catch (error) {
       const message =

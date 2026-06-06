@@ -1,5 +1,9 @@
 import { MiQ } from "makeitaquote";
 import type { FxTweet } from "./fxtwitter.js";
+import { fetchImageAsDataUri } from "../utils/image.js";
+
+/** アバターを取得できなかった場合に使う Discord のデフォルトアバター。 */
+const FALLBACK_AVATAR = "https://cdn.discordapp.com/embed/avatars/0.png";
 
 /** 引用画像の生成に失敗した場合のエラー。 */
 export class QuoteGenerationError extends Error {
@@ -10,23 +14,36 @@ export class QuoteGenerationError extends Error {
 }
 
 /**
+ * アバター URL を Voids API が受け付ける形式に解決する。
+ * Twitter のアバター URL は拒否されるため data URI に変換し、
+ * 取得に失敗した場合は Discord のデフォルトアバターにフォールバックする。
+ */
+async function resolveAvatar(url: string | null): Promise<string> {
+  if (!url) return FALLBACK_AVATAR;
+  try {
+    return await fetchImageAsDataUri(url);
+  } catch {
+    return FALLBACK_AVATAR;
+  }
+}
+
+/**
  * FxTwitter のツイート情報から「Make it a Quote」風の画像を生成する。
- * @param tweet  FxTwitter API から取得したツイート。
- * @param color  背景に色を付けるかどうか。
+ * @param tweet FxTwitter API から取得したツイート。
  * @returns 生成された画像の Buffer。
  * @throws {QuoteGenerationError} 画像生成に失敗した場合。
  */
-export async function generateQuoteImage(
-  tweet: FxTweet,
-  color = false
-): Promise<Buffer> {
+export async function generateQuoteImage(tweet: FxTweet): Promise<Buffer> {
   try {
+    const avatar = await resolveAvatar(tweet.author.avatar_url);
     const miq = new MiQ()
       .setText(tweet.text)
-      .setAvatar(tweet.author.avatar_url)
-      .setUsername(`@${tweet.author.screen_name}`)
+      .setAvatar(avatar)
+      // username には `@` を付けない (API 側で `@` が付与されるため)。
+      .setUsername(tweet.author.screen_name)
       .setDisplayname(tweet.author.name)
-      .setColor(color)
+      // Voids API は color が falsy だとエラーになるため常に true を渡す。
+      .setColor(true)
       .setWatermark("Twitter Quote Bot");
 
     // returnRawImage = true で Buffer を取得する。

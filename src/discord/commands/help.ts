@@ -16,9 +16,8 @@ export const helpCommand: Command = {
       )
       .addFields(
         {
-          name: "/quote url:<ツイートURL> [color:<true|false>]",
-          value:
-            "指定したツイートを引用画像にします。`color` を `true` にすると背景に色が付きます。",
+          name: "/quote url:<ツイートURL>",
+          value: "指定したツイートを引用画像にします。",
         },
         {
           name: "/setchannel [channel:<チャンネル>]",
