@@ -12,8 +12,8 @@ TwitterのツイートURLを `/quote` スラッシュコマンドで読み込ま
       - FxTwitter API で取得したツイート本文とユーザーネーム、ユーザーID、ユーザープロフィール画像を `makeitaquote` に渡して引用画像化
     - `/setchannel`
       - サーバーごとに1チャンネル指定可能
-      - [ ] 保存方法などは検討 (検討して確定したのちに下に追記、チェックを入れる)
-        - <ここに確定した保存方法>
+      - [x] 保存方法などは検討 (検討して確定したのちに下に追記、チェックを入れる)
+        - `data/channels.json` への JSON 永続化 (`{ [guildId]: channelId }` 形式)。外部DB不要・軽量。実装は `src/services/channelStore.ts`。`data/` は `.gitignore` 対象。
   - Channel
     - `/setchannel` で指定したチャンネルにツイートURLが貼り付けられたらそれに `/quote` と同じように画像を生成しリプライ
 - Code
@@ -24,8 +24,8 @@ TwitterのツイートURLを `/quote` スラッシュコマンドで読み込ま
 
 - `tsconfig.json` および `tsdown.config.ts` に従ったTypeScriptのコードで記述すること。
 - `prettier` および `eslint` / `eslint-config-prettier` に従ったTypeScriptのコードで記述すること。
-  - [ ] Prettier with ESLint 用の設定(configファイルや必要パッケージのインストール等)を済ませる。(完了したらチェックを入れる)
-  - [ ] `package.json` の `scripts` の `lint` / `lint:fix` を作成すること。(完了したらチェックを入れる)
+  - [x] Prettier with ESLint 用の設定(configファイルや必要パッケージのインストール等)を済ませる。(完了したらチェックを入れる)
+  - [x] `package.json` の `scripts` の `lint` / `lint:fix` を作成すること。(完了したらチェックを入れる)
 - 実装は `src/**` にまとめること。
 - 一つのファイルが肥大化しないようにファイル分けすること。一つのファイルあたり150行以内に収まることが望ましい。
 - テストを作成すること。(`tests/**`)
@@ -58,8 +58,15 @@ npm v11
   - ky
   - makeitaquote
 - DevDependencies
+  - @eslint/js
+  - @types/node
+  - eslint
+  - eslint-config-prettier
+  - globals
+  - prettier
   - tsdown
   - typescript
+  - typescript-eslint
   - vitest
 
 その他必要なライブラリ(型定義用やその他)も適宜追加してよい。ただし、追加したのちに上のリストにa-z順に従いながらパッケージ名を挿入すること。
